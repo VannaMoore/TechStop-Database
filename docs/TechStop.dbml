@@ -1,0 +1,68 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table Product {
+  id int [pk, increment] // Primary Key, auto-increment
+  ProductName varchar(255) [not null]
+  Description varchar(max)
+  Price decimal(10,2) [not null]
+  QuantityInStock int [default: 0]
+  SupplierId int [ref: > Supplier.id]
+} 
+
+Table Supplier {
+  id int [pk, increment]
+  SupplierName varchar (255) [not null]
+  Phone varchar(20)
+  Email varchar(255)
+  URL varchar(255)
+}
+
+Table CustomerOrder {
+  id int [pk, increment]
+  CustomerId int [ref: > Customer.id]
+  EmployeeId int [ref: > Employee.id]
+  OrderDate datetime2
+  Status varchar(20)
+  
+  Subtotal decimal(10,2) [not null, default:0]
+  DiscountAmount decimal(10,2) [not null, default:0]
+  Tax decimal(10,2) [not null, default:0]
+  Total decimal(10,2) [not null, default:0]
+}
+
+Table OrderItem {
+  id int [pk, increment]
+  OrderId int [not null, ref: > CustomerOrder.id]
+  ProductId int [not null, ref: > Product.id]
+  Quantity int [not null, default:1]
+  UnitPrice decimal(10,2) [not null]
+  Discount decimal(10,2) [default: 0]
+}
+
+Table Customer {
+  id int [pk, not null]
+  FirstName varchar(255) [not null]
+  LastName varchar(255) [not null]
+  Phone varchar(20) [not null]
+  Email varchar(255) [not null]
+  CreatedAt datetime2 [not null]
+  UpdatedAt datetime2
+  IsActive bool [not null, default: true]
+
+  indexes {
+    (Email) [unique]
+    (LastName, FirstName) //helpful for lookups
+  }
+}
+
+Table Employee {
+  id int [pk, not null]
+  FirstName varchar(255) [not null]
+  LastName varchar(255) [not null]
+  Phone varchar(20) [not null]
+  Email varchar(255) [not null]
+  CreatedAt datetime2 [not null]
+  UpdatedAt datetime2
+  IsActive bool [not null, default: true]
+}
