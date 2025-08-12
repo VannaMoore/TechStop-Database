@@ -62,5 +62,7 @@ Requires SQL Server + SSMS.
 - `CustomerOrder` & `OrderItem` names avoid T-SQL reserved words.
 
 ```
-
+## License
+This project is licensed under the [MIT License](LICENSE).
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ```
