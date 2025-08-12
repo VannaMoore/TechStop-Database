@@ -61,8 +61,10 @@ Requires SQL Server + SSMS.
 - Money fields use `DECIMAL(10,2)`.
 - `CustomerOrder` & `OrderItem` names avoid T-SQL reserved words.
 
-```
 ## License
 This project is licensed under the [MIT License](LICENSE).
+
+```
+
 
 ```
