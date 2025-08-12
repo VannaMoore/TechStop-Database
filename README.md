@@ -30,7 +30,7 @@ TechStop.dbml # dbdiagram.io source
 sql/
 01_create_database.sql
 02_create_tables.sql
-03_insert_sample_data.sql # (coming soon)
+03_insert_sample_data.sql # (ongoing)
 04_create_indexes.sql # (coming soon)
 
 ## Setup / How to Run
@@ -62,6 +62,5 @@ Requires SQL Server + SSMS.
 - `CustomerOrder` & `OrderItem` names avoid T-SQL reserved words.
 
 ## License
+
 This project is licensed under the [MIT License](LICENSE).
-
-
