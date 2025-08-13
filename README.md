@@ -52,7 +52,7 @@ Requires SQL Server + SSMS.
 
 - [x] Database created (`TechStop`)
 - [x] Core tables created (Supplier, Product, Customer, Employee, CustomerOrder, OrderItem)
-- [ ] Sample data
+- [x] Sample data
 - [ ] Indexes
 - [ ] Views / Stored Procedures / Triggers
 
