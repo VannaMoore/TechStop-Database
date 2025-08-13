@@ -72,12 +72,12 @@ DECLARE @DorothyId INT = (SELECT Id FROM dbo.Customer WHERE Email='dorothy.gale@
 DECLARE @SamId INT = (SELECT Id FROM dbo.Customer WHERE Email='sam.smith@example.com');
 DECLARE @CharlieId INT = (SELECT Id FROM dbo.Customer WHERE Email='charlie.charelston@example.com');
 
---Employees Helpers
-DECLARE @BobbyId INT=(SELECT Id FROM dbo.Customer WHERE Email='bobby.smith@TechStop.com');
-DECLARE @JamesId INT=(SELECT Id FROM dbo.Customer WHERE Email='james.peach@TechStop.com');
-DECLARE @AliceId INT=(SELECT Id FROM dbo.Customer WHERE Email='alice.wonderland@TechStop.com');
-DECLARE @HarryId INT=(SELECT Id FROM dbo.Customer WHERE Email='harry.potter@TechStop.com');
-DECLARE @CarlId INT=(SELECT Id FROM dbo.Customer WHERE Email='carl.jones@TechStop.com');
+--Employee Helpers
+DECLARE @BobbyId INT=(SELECT Id FROM dbo.Employee WHERE Email='bobby.smith@TechStop.com');
+DECLARE @JamesId INT=(SELECT Id FROM dbo.Employee WHERE Email='james.peach@TechStop.com');
+DECLARE @AliceId INT=(SELECT Id FROM dbo.Employee WHERE Email='alice.wonderland@TechStop.com');
+DECLARE @HarryId INT=(SELECT Id FROM dbo.Employee WHERE Email='harry.potter@TechStop.com');
+DECLARE @CarlId INT=(SELECT Id FROM dbo.Employee WHERE Email='carl.jones@TechStop.com');
 
 --Product Helpers
 DECLARE @CableId INT = (SELECT Id FROM dbo.Product WHERE ProductName = 'USB-C Cable 1m');
@@ -91,7 +91,7 @@ DECLARE @HeadphonesId INT = (SELECT Id FROM dbo.Product WHERE ProductName = 'Blu
 DECLARE @SpeakerId INT = (SELECT Id FROM dbo.Product WHERE ProductName = 'Waterproof Bluetooth Speaker');
 
 ---------------------------------------------------------------------
--- Order 1 (John Doe)
+-- Order 1 (John Doe) 
 ---------------------------------------------------------------------
 INSERT INTO dbo.CustomerOrder (CustomerId, EmployeeId, OrderDate, Status)
 VALUES (@JohnId, @BobbyId, DATEADD(DAY,-2,SYSDATETIME()),'Completed')      
@@ -100,39 +100,132 @@ DECLARE @Order1 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.OrderItem (OrderId, ProductId, Quantity, UnitPrice, Discount)
 VALUES
-(@Order1, @CableId, 2, (SELECT Price FROM DBO.Product WHERE Id=@CableId), 0.00),
+(@Order1, @CableId, 2, (SELECT Price FROM dbo.Product WHERE Id=@CableId), 0.00),
 (@Order1, @FullKeyboardId, 2, (SELECT Price FROM DBO.Product WHERE Id=@FullKeyboardId), 5.00);
 
--- Recalc totals for Order 1
+-- Recalc total for Order 1
 UPDATE o
 SET Subtotal = x.Subtotal,
 	Tax = ROUND(@TaxRate * x.Subtotal, 2),
-	Total = x.Subtotal + ROUND(@TaxRate * x.Subtotal, 2)
-FROM dbo.CustomerOrder o
+	Total    = x.Subtotal - o.DiscountAmount + ROUND(@TaxRate * x.Subtotal, 2)
+FROM dbo.CustomerOrder AS o
 JOIN(
 	SELECT oi.OrderId,
 		SUM( (oi.UnitPrice - ISNULL(oi.Discount,0)) * oi.Quantity ) AS Subtotal
 	FROM dbo.OrderItem oi
 	WHERE oi.OrderId = @Order1
 	GROUP BY oi.OrderId
-) x ON x.OrderId = o.Id;
+) AS x ON x.OrderId = o.Id;
 
 
 ---------------------------------------------------------------------
--- Order 1 (Jane Poe)
+-- Order 2 (Jane Poe) 
 ---------------------------------------------------------------------
+INSERT INTO dbo.CustomerOrder (CustomerId, EmployeeId, OrderDate, Status, DiscountAmount)
+VALUES (@JaneId, @JamesId, DATEADD(DAY,-1,SYSDATETIME()), 'Completed',10.00); -- Order Level Discount
 
+DECLARE @Order2 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.OrderItem (OrderId, ProductId, Quantity, UnitPrice, Discount)
+VALUES
+(@Order2, @LaptopStandId, 5, (SELECT Price FROM dbo.Product WHERE Id=@LaptopStandId), 15.00),
+(@Order2, @StylusPenId, 20, (SELECT Price FROM dbo.Product WHERE Id=@StylusPenId), 0.00);
+
+-- Recalc totals for Order 2
+UPDATE o
+SET  Subtotal = x.Subtotal,
+     Tax      = ROUND(@TaxRate * x.Subtotal, 2),
+     Total    = x.Subtotal - o.DiscountAmount + ROUND(@TaxRate * x.Subtotal, 2)
+FROM dbo.CustomerOrder AS o
+JOIN (
+    SELECT oi.OrderId,
+           SUM( (oi.UnitPrice - ISNULL(oi.Discount,0)) * oi.Quantity ) AS Subtotal
+    FROM dbo.OrderItem AS oi
+    WHERE oi.OrderId = @Order2      
+    GROUP BY oi.OrderId
+) AS x ON x.OrderId = o.Id;
 
 ---------------------------------------------------------------------
--- Order 1 (Dorothy Gale)
+-- Order 3 (Dorothy Gale) 
 ---------------------------------------------------------------------
+INSERT INTO dbo.CustomerOrder (CustomerId, EmployeeId, OrderDate, Status)
+VALUES (@DorothyId, @AliceId, DATEADD(DAY, -1, SYSDATETIME()), 'Completed');
 
+DECLARE @Order3 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.OrderItem (OrderId, ProductId, Quantity, UnitPrice, Discount)
+VALUES
+(@Order3, @WirelessMouseId, 25, (SELECT Price FROM dbo.Product WHERE Id=@WirelessMouseId), 5.00),
+(@Order3, @MonitorId, 10, (SELECT Price FROM dbo.Product WHERE Id=@MonitorId), 20.00);
+
+--recalc total for Order 3
+UPDATE o
+SET Subtotal = x.Subtotal,
+	Tax = ROUND(@TaxRate * x.Subtotal, 2),
+	Total = x.Subtotal - o.DiscountAmount + ROUND(@TaxRate * x.Subtotal, 2)
+FROM dbo.CustomerOrder AS o
+JOIN (
+    SELECT oi.OrderId,
+           SUM( (oi.UnitPrice - ISNULL(oi.Discount,0)) * oi.Quantity ) AS Subtotal
+    FROM dbo.OrderItem oi
+    WHERE oi.OrderId = @Order3
+    GROUP BY oi.OrderId
+) AS x ON x.OrderId = o.Id;
 
 ---------------------------------------------------------------------
--- Order 1 (Sam Smith)
+-- Order 4 (Sam Smith) 
 ---------------------------------------------------------------------
+INSERT INTO dbo.CustomerOrder (CustomerId, EmployeeId, OrderDate, Status)
+VALUES (@SamId, @HarryId, DATEADD(DAY, -45, SYSDATETIME()), 'Completed');
 
+DECLARE @Order4 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.OrderItem (OrderId, ProductId, Quantity, UnitPrice, Discount)
+VALUES
+(@Order4, @FullKeyboardId, 25, (SELECT Price FROM dbo.Product WHERE Id=@FullKeyboardId), 10.00),
+(@Order4, @MechanicalKeyboardId, 75, (SELECT Price FROM dbo.Product WHERE Id=@MechanicalKeyboardId), 25.00),
+(@Order4, @CableId, 100, (SELECT Price FROM dbo.Product WHERE Id=@CableId), 10.00),
+(@Order4, @LaptopStandId, 25, (SELECT Price FROM dbo.Product WHERE Id=@LaptopStandId), 5.00);
+
+-- Recalc totals for Order 4
+UPDATE o
+SET Subtotal = x.Subtotal,
+	Tax = ROUND(@TaxRate * x.Subtotal, 2),
+	Total = x.Subtotal - o.DiscountAmount + ROUND(@TaxRate * x.Subtotal, 2)
+FROM dbo.CustomerOrder AS o
+JOIN (
+    SELECT oi.OrderId,
+           SUM( (oi.UnitPrice - ISNULL(oi.Discount,0)) * oi.Quantity ) AS Subtotal
+    FROM dbo.OrderItem oi
+    WHERE oi.OrderId = @Order4
+    GROUP BY oi.OrderId
+) AS x ON x.OrderId = o.Id;
 
 ---------------------------------------------------------------------
--- Order 1 (Charlie Charleston)
+-- Order 5 (Charlie Charleston) 
 ---------------------------------------------------------------------
+INSERT INTO dbo.CustomerOrder (CustomerId, EmployeeId, OrderDate, Status)
+VALUES (@CharlieId, @CarlId, DATEADD(DAY, -72, SYSDATETIME()), 'Completed');
+
+DECLARE @Order5 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.OrderItem (OrderId, ProductId, Quantity, UnitPrice, Discount)
+VALUES
+(@Order5, @SpeakerId, 10, (SELECT Price FROM dbo.Product WHERE Id=@SpeakerId), 0.00),
+(@Order5, @HeadphonesId, 25, (SELECT Price FROM dbo.Product WHERE Id=@HeadphonesId), 5.00),
+(@Order5, @CableId, 25, (SELECT Price FROM dbo.Product WHERE Id=@CableId), 3.00);
+
+--Recalculate totals on Order 5
+UPDATE o 
+SET Subtotal = x.Subtotal,
+	Tax = ROUND(@TaxRate * x.Subtotal, 2),
+	Total = x.Subtotal - o.DiscountAmount + ROUND(@TaxRate * x.Subtotal, 2)
+FROM dbo.CustomerOrder AS o
+JOIN(
+	SELECT oi.OrderId,
+		SUM( (oi.UnitPrice - ISNULL(oi.Discount,0)) * oi.Quantity ) AS Subtotal
+	FROM dbo.OrderItem oi
+	WHERE oi.OrderId = @Order5
+	GROUP BY oi.OrderId
+) AS x ON x.OrderId = o.Id;
+
