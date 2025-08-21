@@ -35,7 +35,25 @@ sql/
 
 ## Setup / How to Run
 
-Requires SQL Server + SSMS.
+### Azure SQL Database Setup
+
+1. **Create Azure Resources:**
+
+   - Create an Azure SQL Server and Database
+   - Note your connection details
+
+2. **Connect SSMS to Azure:**
+
+   - Server: `your-server.database.windows.net`
+   - Authentication: SQL Server Authentication
+   - Connect directly to your target database
+
+3. **Run Scripts:**
+   - Skip `01_create_database.sql` (database created in Azure portal)
+   - Run `02_create_tables.sql`
+   - Run `03_insert_sample_data.sql`
+
+### Local Development Setup Requires SQL Server + SSMS.
 
 1. Run scripts in order from the `/sql` folder:
 
