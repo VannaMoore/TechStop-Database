@@ -1,0 +1,71 @@
+# -----------------------------
+# Visual Studio / .NET
+# -----------------------------
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.ilk
+*.idb
+*.obj
+*.iobj
+*.ipdb
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+*.nuspec
+project.lock.json
+project.fragment.lock.json
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# -----------------------------
+# SQL / Database
+# -----------------------------
+*.mdf
+*.ldf
+*.ndf
+*.sqlite
+*.sqlproj
+*.dbmdl
+
+# Azure Data / SSMS
+*.dacpac
+*.bacpac
+
+# -----------------------------
+# OS / General
+# -----------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Logs
+*.log
+
+# -----------------------------
+# Other
+# -----------------------------
+# Ignore environment-specific configs
+.env

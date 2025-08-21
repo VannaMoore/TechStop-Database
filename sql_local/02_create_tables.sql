@@ -1,4 +1,4 @@
-USE TechStop;
+USE TechStopDB;
 GO
 
 CREATE TABLE dbo.Supplier (
